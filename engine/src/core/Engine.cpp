@@ -1,6 +1,7 @@
 #include "Engine.h"
 
 #include <iostream>
+#include <box2d/box2d.h>
 
 namespace engine
 {
