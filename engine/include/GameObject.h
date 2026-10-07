@@ -1,10 +1,10 @@
 #pragma once
 
-#include <memory>
+#include "RigidBody.h"
+#include "Types.h"
+#include "abstract/Collider.h"
 
-#include "../../include/RigidBody.h"
-#include "../../include/Types.h"
-#include "../../include/abstract/Collider.h"
+#include <memory>
 
 class GameObject
 {

@@ -1,9 +1,9 @@
 #include "Box2DPhysicsWorld.h"
 
-#include <stdexcept>
-
-#include "../core/GameObject.h"
+#include "../../include/GameObject.h"
 #include "Box2DShape.h"
+
+#include <stdexcept>
 
 namespace // anonymous namespace, so linking doesn't fail
 {

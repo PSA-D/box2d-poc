@@ -1,16 +1,16 @@
 // Box2D demo: a ball and a crate fall onto a static ground box.
 // Shows the whole chain:  Factory -> GameObject -> PhysicsSystem -> IPhysicsWorld (Box2D adapter)
 
-#include <iomanip>
-#include <iostream>
-#include <memory>
-
+#include "../include/GameObject.h"
 #include "../include/abstract/BoxCollider.h"
 #include "../include/abstract/CircleCollider.h"
 #include "components/Box2DPhysicsWorld.h"
-#include "core/GameObject.h"
 #include "factories/Box2DColliderFactory.h"
 #include "systems/PhysicsSystem.h"
+
+#include <iomanip>
+#include <iostream>
+#include <memory>
 
 namespace
 {
