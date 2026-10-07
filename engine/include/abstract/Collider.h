@@ -27,8 +27,8 @@ class Collider : public Component
 
     protected:
         Vec2  offset {0, 0};
-        float density { 1.0 }; // How heavy an object is for it's size. It influences the mass of the RigidBody
+        float density { 1.0 }; // How heavy an object is for it's size
         float friction { 0.3 }; // How much sliding (0.0-1.0)
         float restitution { 0.3 }; // Bounciness (0.0-1.0)
         bool trigger { false }; // Whether it's a trigger or an object
-};
+};
