@@ -12,6 +12,7 @@ auto main() -> int
     {
         // Game loop placeholder
         std::cout << "Engine is running\n";
+        gameEngine.runBox2DExample();
         gameEngine.shutdown();
     }
 
