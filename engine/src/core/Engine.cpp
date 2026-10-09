@@ -2,12 +2,13 @@
 
 #include "../components/Box2DPhysicsWorld.h"
 #include "../factories/Box2DColliderFactory.h"
-#include "GameObject.h"
-#include "abstract/BoxCollider.h"
-#include "abstract/CircleCollider.h"
 #include "../systems/PhysicsSystem.h"
+#include "GameObject.h"
 #include "Registry.h"
 #include "RigidBody.h"
+#include "Transform.h"
+#include "abstract/BoxCollider.h"
+#include "abstract/CircleCollider.h"
 
 #include <iomanip>
 #include <iostream>
@@ -60,6 +61,7 @@ namespace engine
         Registry registry;
 
         // Pick the backend once; everything below only uses abstract interfaces.
+        // The only place that has Box2D is in the initialization.
         std::unique_ptr<ColliderFactory> factory = std::make_unique<Box2DColliderFactory>();
         PhysicsSystem physics(registry, std::make_unique<Box2DPhysicsWorld>(registry));
 

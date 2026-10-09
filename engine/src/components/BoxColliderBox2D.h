@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../include/abstract/BoxCollider.h"
+#include "abstract/BoxCollider.h"
 #include "Box2DShape.h"
 
 class BoxColliderBox2D : public BoxCollider, public Box2DShape

@@ -9,29 +9,28 @@
 
 class Registry;
 
-// Adapter: translates IPhysicsWorld into Box2D (v3) calls. Reads Transform / Rigidbody / Collider
-// of each entity from the Registry. The Registry must outlive this world.
+// Adapter: translates IPhysicsWorld into Box2D calls.
 class Box2DPhysicsWorld : public IPhysicsWorld
 {
     public:
         explicit Box2DPhysicsWorld(Registry& registry, Vec2 gravity = {0.0f, -10.0f});
         ~Box2DPhysicsWorld() override;
 
+        // No copies
         Box2DPhysicsWorld(const Box2DPhysicsWorld&) = delete;
         Box2DPhysicsWorld& operator=(const Box2DPhysicsWorld&) = delete;
 
         void step(float fixedDt) override;
 
-        // Needs Transform + Collider (made by Box2DColliderFactory); Rigidbody is optional (no Rigidbody = static).
+        // Needs Transform + Collider, Rigidbody is optional (no Rigidbody = static)
         void addObject(GameObject& go) override;
         void removeObject(GameObject& go) override;
         bool hasObject(const GameObject& go) const override;
 
-        // Writes body position/angle into each entity's Transform, and drops bodies whose entity lost its Collider/Transform.
         void syncTransforms() override;
 
     private:
-        static constexpr int SUB_STEPS = 4;
+        static constexpr int SUB_STEPS = 4; // Amount of substeps in the step()
 
         Registry& registry;
         b2WorldId worldId;

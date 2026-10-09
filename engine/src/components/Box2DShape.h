@@ -14,13 +14,13 @@ class Box2DShape
         // Creates the b2Shape on `body`, using the collider's density/friction/etc.
         virtual void attachTo(b2BodyId body) = 0;
 
-        // Forget the shape (the body that owned it is gone).
+        // Remove the shape, since the body that owned it is gone
         void detach() { shapeId = b2_nullShapeId; }
 
     protected:
-        static b2ShapeDef makeShapeDef(const Collider& collider);
+        b2ShapeDef makeShapeDef(const Collider& collider);
 
-        // True if this shape is currently touching `other` in the Box2D world.
+        // True if this shape is currently touching `other` in the Box2D world. Similar to collidesWith()
         bool isTouching(const Collider& other) const;
 
         b2ShapeId shapeId = b2_nullShapeId;

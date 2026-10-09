@@ -20,10 +20,10 @@ class PhysicsSystem
         void update(float dt);
 
     private:
-        static constexpr float FIXED_DT = 1.0f / 60.0f;
-        static constexpr float MAX_ACCUMULATED = 0.25f;
+        static constexpr float FIXED_DT = 1.0f / 60.0f; // Fixed timestamp (60 FPS)
+        static constexpr float MAX_ACCUMULATED = 0.25f; // Max accumulated time. Prevents an infinite spiral of updates
 
         Registry& registry;
         std::unique_ptr<IPhysicsWorld> world;
-        float accumulator = 0.0f;
+        float accumulator = 0.0f; // To check whether a step() needs to be taken
 };

@@ -3,14 +3,14 @@
 #include <stdexcept>
 #include <vector>
 
-#include "../../include/RigidBody.h"
-#include "../../include/Types.h"
-#include "../../include/abstract/Collider.h"
+#include "RigidBody.h"
+#include "Transform.h"
+#include "abstract/Collider.h"
 #include "GameObject.h"
 #include "Registry.h"
 #include "Box2DShape.h"
 
-namespace
+namespace // can be a util or something in the future
 {
     b2BodyType toBox2D(BodyType type)
     {
@@ -26,16 +26,16 @@ namespace
 
 Box2DPhysicsWorld::Box2DPhysicsWorld(Registry& registry, Vec2 gravity) : registry(registry)
 {
-    b2WorldDef def = b2DefaultWorldDef();
+    b2WorldDef def = b2DefaultWorldDef(); // Create physics world
     def.gravity = b2Vec2{gravity.x, gravity.y};
     worldId = b2CreateWorld(&def);
 }
 
 Box2DPhysicsWorld::~Box2DPhysicsWorld()
 {
-    // Destroying the world destroys every shape, so tell the colliders.
+    // Destroying the world destroys every shape, so tell the colliders
     for (auto& [id, body] : bodies)
-        if (auto* shape = dynamic_cast<Box2DShape*>(registry.get<Collider>(GameObject{id})))
+        if (auto* shape = dynamic_cast<Box2DShape*>(registry.get<Collider>(GameObject{id}))) // Cast into the right Shape
             shape->detach();
 
     b2DestroyWorld(worldId);
@@ -56,10 +56,11 @@ void Box2DPhysicsWorld::addObject(GameObject& go)
     if (transform == nullptr || collider == nullptr)
         throw std::invalid_argument("Box2DPhysicsWorld::addObject: entity needs a Transform and a Collider");
 
-    auto* shape = dynamic_cast<Box2DShape*>(collider);
+    Box2DShape* shape = dynamic_cast<Box2DShape*>(collider);
     if (shape == nullptr)
         throw std::invalid_argument("Box2DPhysicsWorld::addObject: collider was not created by Box2DColliderFactory");
 
+    // Make Box2D body
     b2BodyDef bodyDef = b2DefaultBodyDef();
     bodyDef.position = b2Vec2{transform->position.x, transform->position.y};
     bodyDef.rotation = b2MakeRot(transform->rotation);
@@ -75,6 +76,7 @@ void Box2DPhysicsWorld::addObject(GameObject& go)
         bodyDef.type = b2_staticBody;
     }
 
+    // Attach the Box2D body to the Box2D Shape
     const b2BodyId body = b2CreateBody(worldId, &bodyDef);
     shape->attachTo(body);
     bodies.emplace(go.getId(), body);
@@ -100,23 +102,24 @@ bool Box2DPhysicsWorld::hasObject(const GameObject& go) const
 
 void Box2DPhysicsWorld::syncTransforms()
 {
-    std::vector<GameObject> stale;
+    std::vector<GameObject> removedObjects;
 
     for (const auto& [id, body] : bodies)
     {
         GameObject go{id};
         Transform* transform = registry.get<Transform>(go);
-        if (transform == nullptr || !registry.has<Collider>(go))
+        if (transform == nullptr || !registry.has<Collider>(go)) // Object is null
         {
-            stale.push_back(go);
+            removedObjects.push_back(go);
             continue;
         }
 
+        // Else, sync the transform
         const b2Vec2 pos = b2Body_GetPosition(body);
         transform->position = Vec2{pos.x, pos.y};
         transform->rotation = b2Rot_GetAngle(b2Body_GetRotation(body));
     }
 
-    for (GameObject& go : stale)
+    for (GameObject& go : removedObjects)
         removeObject(go);
 }

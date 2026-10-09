@@ -7,16 +7,18 @@
 b2ShapeDef Box2DShape::makeShapeDef(const Collider& collider)
 {
     b2ShapeDef def = b2DefaultShapeDef();
-    def.density              = collider.getDensity();
-    def.material.friction    = collider.getFriction();
+
+    def.density = collider.getDensity();
+    def.material.friction = collider.getFriction();
     def.material.restitution = collider.getRestitution();
-    def.isSensor             = collider.isTrigger();
+    def.isSensor = collider.isTrigger();
+
     return def;
 }
 
 bool Box2DShape::isTouching(const Collider& other) const
 {
-    const auto* otherShape = dynamic_cast<const Box2DShape*>(&other);
+    const Box2DShape* otherShape = dynamic_cast<const Box2DShape*>(&other);
     if (otherShape == nullptr || B2_IS_NULL(shapeId) || B2_IS_NULL(otherShape->shapeId))
         return false;
 

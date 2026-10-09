@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../include/abstract/CircleCollider.h"
+#include "abstract/CircleCollider.h"
 #include "Box2DShape.h"
 
 class CircleColliderBox2D : public CircleCollider, public Box2DShape
