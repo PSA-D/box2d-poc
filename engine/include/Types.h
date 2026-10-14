@@ -34,4 +34,4 @@ enum class CollisionType
     Begin,
     Stay, // Not Implemented yet
     End,
-};
+}; // Can be extended with Hit events. Hit events are brutal touches. Example Hit event: ball slamming in wall.

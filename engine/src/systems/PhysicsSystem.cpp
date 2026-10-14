@@ -33,19 +33,17 @@ void PhysicsSystem::update(float dt)
                 case CollisionType::Begin:
                     for (auto event : collisionEvents)
                     {
-                        if (event.isTrigger)
-                            onTriggerEnter(event);
-                        else
-                            onCollisionDetected(event);
+                        event.isTrigger
+                            ? onTriggerEnter(event)
+                            : onCollisionDetected(event);
                     }
                     break;
                 case CollisionType::End:
                     for (auto event : collisionEvents)
                     {
-                        if (event.isTrigger)
-                            onTriggerExit(event);
-                        else
-                            onCollisionExit(event);
+                        event.isTrigger
+                            ? onTriggerExit(event)
+                            : onCollisionExit(event);
                     }
                     break;
                 default:
