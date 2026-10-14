@@ -75,6 +75,34 @@ void Box2DPhysicsWorld::step(float fixedDt)
 
         collisionEvents[CollisionType::End].push_back(CollisionEvent{a, b});
     }
+
+    b2SensorEvents sensorEvents = b2World_GetSensorEvents(worldId);
+
+    for (int i = 0; i < sensorEvents.beginCount; ++i)
+    {
+        const b2SensorBeginTouchEvent& e = sensorEvents.beginEvents[i];
+
+        b2BodyId bodySensor = b2Shape_GetBody(e.sensorShapeId);
+        b2BodyId bodyVisitor = b2Shape_GetBody(e.visitorShapeId);
+
+        GameObject a = findGameObject(bodySensor);
+        GameObject b = findGameObject(bodyVisitor);
+
+        collisionEvents[CollisionType::Begin].push_back(CollisionEvent{a, b, true});
+    }
+
+    for (int i = 0; i < sensorEvents.endCount; ++i)
+    {
+        const b2SensorEndTouchEvent& e = sensorEvents.endEvents[i];
+
+        b2BodyId bodySensor = b2Shape_GetBody(e.sensorShapeId);
+        b2BodyId bodyVisitor = b2Shape_GetBody(e.visitorShapeId);
+
+        GameObject a = findGameObject(bodySensor);
+        GameObject b = findGameObject(bodyVisitor);
+
+        collisionEvents[CollisionType::End].push_back(CollisionEvent{a, b, true});
+    }
 }
 
 void Box2DPhysicsWorld::addObject(GameObject& go)

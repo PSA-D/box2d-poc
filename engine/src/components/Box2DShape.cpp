@@ -14,6 +14,7 @@ b2ShapeDef Box2DShape::makeShapeDef(const Collider& collider)
     def.isSensor = collider.isTrigger();
 
     def.enableContactEvents = true; // For collision events (like enter and leave)
+    def.enableSensorEvents = true; // For trigger events
 
     return def;
 }

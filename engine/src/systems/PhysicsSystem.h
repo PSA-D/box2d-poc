@@ -22,6 +22,8 @@ class PhysicsSystem
 
         void onCollisionDetected(CollisionEvent& event);
         void onCollisionExit(CollisionEvent& event);
+        void onTriggerEnter(CollisionEvent& event);
+        void onTriggerExit(CollisionEvent& event);
 
     private:
         static constexpr float FIXED_DT = 1.0f / 60.0f; // Fixed timestamp (60 FPS)

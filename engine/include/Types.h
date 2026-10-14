@@ -24,12 +24,14 @@ struct ComponentPool : IPool // Object pool for all components
 
 struct CollisionEvent
 {
-    GameObject one;
-    GameObject two;
+    GameObject one; // For trigger: sensor
+    GameObject two; // For trigger: visitor
+    bool isTrigger {false};
 };
 
 enum class CollisionType
 {
     Begin,
-    End
+    Stay, // Not Implemented yet
+    End,
 };

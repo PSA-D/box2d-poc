@@ -103,11 +103,22 @@ namespace engine
         crateCollider->setRestitution(0.0f);
         registry.add<Collider>(crate, std::move(crateCollider));
 
+        // Trigger
+        GameObject triggerZone;
+
+        registry.createAndAdd<Transform>(triggerZone, Vec2{3.0f, 1.0f});
+
+        auto triggerCollider = factory->createBoxCollider({3.0f, 1.0f});
+        triggerCollider->setTrigger(true);
+
+        registry.add<Collider>(triggerZone, std::move(triggerCollider));
+
         std::cout << "Ground: " << ground.getId() << std::endl;
         std::cout << "Ball 1: " << ball1.getId() << std::endl;
         std::cout << "Ball 2: " << ball2.getId() << std::endl;
         std::cout << "Ball 3: " << ball3.getId() << std::endl;
         std::cout << "Crate: " << crate.getId() << std::endl;
+        std::cout << "Trigger: " << triggerZone.getId() << std::endl;
         std::cout << std::endl;
 
         // Game loop

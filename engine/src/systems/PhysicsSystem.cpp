@@ -28,15 +28,25 @@ void PhysicsSystem::update(float dt)
 
         for (auto [type, collisionEvents] : events)
         {
-            switch (type) // I know it's ugly okay
+            switch (type) // I know it's ugly okay, but it's an PoC
             {
                 case CollisionType::Begin:
                     for (auto event : collisionEvents)
-                        onCollisionDetected(event);
+                    {
+                        if (event.isTrigger)
+                            onTriggerEnter(event);
+                        else
+                            onCollisionDetected(event);
+                    }
                     break;
                 case CollisionType::End:
                     for (auto event : collisionEvents)
-                        onCollisionExit(event);
+                    {
+                        if (event.isTrigger)
+                            onTriggerExit(event);
+                        else
+                            onCollisionExit(event);
+                    }
                     break;
                 default:
                     std::cout << "Unknown collision type" << std::endl;
@@ -59,3 +69,14 @@ void PhysicsSystem::onCollisionExit(CollisionEvent& event)
 {
     std::cout << "Collision exited with objects " << event.one.getId() << " and " << event.two.getId() << '\n';
 }
+
+void PhysicsSystem::onTriggerEnter(CollisionEvent& event)
+{
+    std::cout << "Trigger " << event.one.getId() << " entered with object " << event.two.getId() << '\n';
+}
+
+void PhysicsSystem::onTriggerExit(CollisionEvent& event)
+{
+    std::cout << "Trigger " << event.one.getId() << " exited with object " << event.two.getId() << '\n';
+}
+
