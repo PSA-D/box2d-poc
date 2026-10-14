@@ -57,8 +57,6 @@ namespace engine
     void Engine::runBox2DExample()
     {
         std::cout << std::endl << "Engine run Box2DExample" << std::endl;
-        // Declared first => destroyed last (the physics world reads the registry while shutting down).
-        Registry registry;
 
         // Pick the backend once; everything below only uses abstract interfaces.
         // The only place that has Box2D is in the initialization.

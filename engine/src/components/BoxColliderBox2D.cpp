@@ -1,10 +1,5 @@
 #include "BoxColliderBox2D.h"
 
-bool BoxColliderBox2D::collidesWith(const Collider& other) const
-{
-    return isTouching(other);
-}
-
 void BoxColliderBox2D::attachTo(b2BodyId body)
 {
     const b2ShapeDef def = makeShapeDef(*this);

@@ -12,8 +12,6 @@ class BoxCollider : public Collider
 
         virtual Vec2 getSize() const { return size; };
         virtual void setSize(const Vec2& newSize) { size = newSize; };
-
-        bool collidesWith(const Collider& collider) const override = 0;
     protected:
         Vec2 size { 0, 0 };
 };

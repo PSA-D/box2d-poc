@@ -8,8 +8,6 @@ class Collider : public Component
     public:
         virtual ~Collider() = default;
 
-        virtual bool collidesWith(const Collider& collider) const = 0;
-
         virtual Vec2 getOffset() const { return offset; };
         virtual void setOffset(const Vec2& newOffset) { offset = newOffset; };
 

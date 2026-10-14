@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Registry.h"
+
 namespace engine
 {
 class Engine
@@ -21,5 +23,7 @@ public:
     void runBox2DExample();
 private:
     bool running{false};
+
+    Registry registry {};
 };
 } // namespace engine
