@@ -1,18 +1,19 @@
 #include "Box2DPhysicsWorld.h"
 
-#include <stdexcept>
-#include <vector>
-
+#include "Box2DShape.h"
+#include "GameObject.h"
+#include "Registry.h"
 #include "RigidBody.h"
 #include "Transform.h"
 #include "abstract/Collider.h"
-#include "GameObject.h"
-#include "Registry.h"
-#include "Box2DShape.h"
+
+#include <functional>
+#include <stdexcept>
+#include <vector>
 
 namespace // can be a util or something in the future
 {
-    b2BodyType toBox2D(BodyType type)
+    b2BodyType toBox2DType(BodyType type)
     {
         switch (type)
         {
@@ -44,6 +45,34 @@ Box2DPhysicsWorld::~Box2DPhysicsWorld()
 void Box2DPhysicsWorld::step(float fixedDt)
 {
     b2World_Step(worldId, fixedDt, SUB_STEPS);
+
+    b2ContactEvents events = b2World_GetContactEvents(worldId);
+
+    for (int i = 0; i < events.beginCount; ++i)
+    {
+        const auto& e = events.beginEvents[i];
+
+        b2BodyId bodyA = b2Shape_GetBody(e.shapeIdA);
+        b2BodyId bodyB = b2Shape_GetBody(e.shapeIdB);
+
+        GameObject a = findGameObject(bodyA);
+        GameObject b = findGameObject(bodyB);
+
+        collisionEvents.emplace(CollisionType::Begin, CollisionEvent{a, b});
+    }
+
+    for (int i = 0; i < events.endCount; ++i)
+    {
+        const auto& e = events.endEvents[i];
+
+        b2BodyId bodyA = b2Shape_GetBody(e.shapeIdA);
+        b2BodyId bodyB = b2Shape_GetBody(e.shapeIdB);
+
+        GameObject a = findGameObject(bodyA);
+        GameObject b = findGameObject(bodyB);
+
+        collisionEvents.emplace(CollisionType::End, CollisionEvent{a, b});
+    }
 }
 
 void Box2DPhysicsWorld::addObject(GameObject& go)
@@ -67,7 +96,7 @@ void Box2DPhysicsWorld::addObject(GameObject& go)
 
     if (const Rigidbody* rb = registry.get<Rigidbody>(go))
     {
-        bodyDef.type          = toBox2D(rb->getBodyType());
+        bodyDef.type          = toBox2DType(rb->getBodyType());
         bodyDef.gravityScale  = rb->getGravityScale();
         bodyDef.fixedRotation = rb->isFixedRotation();
     }
@@ -123,3 +152,24 @@ void Box2DPhysicsWorld::syncTransforms()
     for (GameObject& go : removedObjects)
         removeObject(go);
 }
+
+std::map<CollisionType, CollisionEvent> Box2DPhysicsWorld::consumeCollisionEvents()
+{
+    std::map<CollisionType, CollisionEvent> result = std::move(collisionEvents);
+    collisionEvents.clear();
+
+    return result;
+};
+
+GameObject Box2DPhysicsWorld::findGameObject(const b2BodyId& bodyId) const
+{
+    for (const auto& [id, body] : bodies)
+    {
+        if (B2_ID_EQUALS(body, bodyId))
+        {
+            return GameObject{id};
+        }
+    }
+
+    return GameObject{};
+};

@@ -1,11 +1,11 @@
 #pragma once
 
-#include <unordered_map>
+#include "IPhysicsWorld.h"
+#include "Types.h"
 
 #include <box2d/box2d.h>
-
-#include "../../include/IPhysicsWorld.h"
-#include "../../include/Types.h"
+#include <map>
+#include <unordered_map>
 
 class Registry;
 
@@ -29,10 +29,16 @@ class Box2DPhysicsWorld : public IPhysicsWorld
 
         void syncTransforms() override;
 
+        std::map<CollisionType, CollisionEvent> consumeCollisionEvents() override;
+
     private:
         static constexpr int SUB_STEPS = 4; // Amount of substeps in the step()
+
+        GameObject findGameObject(const b2BodyId& bodyId) const;
 
         Registry& registry;
         b2WorldId worldId;
         std::unordered_map<int, b2BodyId> bodies; // keyed by GameObject::getId()
+
+        std::map<CollisionType, CollisionEvent> collisionEvents;
 };

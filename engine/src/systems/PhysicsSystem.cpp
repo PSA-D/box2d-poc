@@ -1,10 +1,12 @@
 #include "PhysicsSystem.h"
 
-#include <algorithm>
-
+#include "Registry.h"
 #include "Transform.h"
 #include "abstract/Collider.h"
-#include "Registry.h"
+
+#include <algorithm>
+#include <iostream>
+#include <ostream>
 
 void PhysicsSystem::update(float dt)
 {
@@ -21,8 +23,34 @@ void PhysicsSystem::update(float dt)
     while (accumulator >= FIXED_DT)
     {
         world->step(FIXED_DT);
+
+        std::map<CollisionType, CollisionEvent> events = world->consumeCollisionEvents();
+
+        for (auto [type, event] : events)
+        {
+            switch (type)
+            {
+                case CollisionType::Begin:
+                    onCollisionDetected(event);
+                    break;
+                case CollisionType::End:
+                    onCollisionExit(event);
+                    break;
+            }
+        }
+
         accumulator -= FIXED_DT;
     }
 
     world->syncTransforms();
+}
+
+void PhysicsSystem::onCollisionDetected(CollisionEvent& event)
+{
+    std::cout << "Collision detected with objects " << event.one.getId() << " and " << event.two.getId() << '\n';
+}
+
+void PhysicsSystem::onCollisionExit(CollisionEvent& event)
+{
+    std::cout << "Collision exited with objects " << event.one.getId() << " and " << event.two.getId() << '\n';
 }

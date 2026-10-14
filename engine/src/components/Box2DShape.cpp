@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "../../include/abstract/Collider.h"
+#include "abstract/Collider.h"
 
 b2ShapeDef Box2DShape::makeShapeDef(const Collider& collider)
 {
@@ -12,6 +12,8 @@ b2ShapeDef Box2DShape::makeShapeDef(const Collider& collider)
     def.material.friction = collider.getFriction();
     def.material.restitution = collider.getRestitution();
     def.isSensor = collider.isTrigger();
+
+    def.enableContactEvents = true; // For collision events (like enter and leave)
 
     return def;
 }

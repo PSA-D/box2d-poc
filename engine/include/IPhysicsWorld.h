@@ -1,5 +1,8 @@
 #pragma once
 
+#include <map>
+#include "Types.h"
+
 class GameObject;
 
 class IPhysicsWorld
@@ -15,4 +18,6 @@ public:
     virtual bool hasObject(const GameObject& go) const = 0;
 
     virtual void syncTransforms() = 0; // Sync the transforms with the colliders
+
+    virtual std::map<CollisionType, CollisionEvent> consumeCollisionEvents() = 0;
 };

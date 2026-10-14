@@ -17,6 +17,8 @@ class Box2DShape
         // Remove the shape, since the body that owned it is gone
         void detach() { shapeId = b2_nullShapeId; }
 
+        b2ShapeId getShapeId() const { return shapeId; }
+
     protected:
         b2ShapeDef makeShapeDef(const Collider& collider);
 

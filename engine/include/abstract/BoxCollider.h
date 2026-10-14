@@ -16,4 +16,4 @@ class BoxCollider : public Collider
         bool collidesWith(const Collider& collider) const override = 0;
     protected:
         Vec2 size { 0, 0 };
-};
+};

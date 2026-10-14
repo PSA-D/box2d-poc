@@ -7,6 +7,7 @@
 
 class GameObject;
 class Registry;
+struct CollisionEvent;
 
 class PhysicsSystem
 {
@@ -18,6 +19,9 @@ class PhysicsSystem
         void removeObject(GameObject& go) { world->removeObject(go); }
 
         void update(float dt);
+
+        void onCollisionDetected(CollisionEvent& event);
+        void onCollisionExit(CollisionEvent& event);
 
     private:
         static constexpr float FIXED_DT = 1.0f / 60.0f; // Fixed timestamp (60 FPS)
