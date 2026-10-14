@@ -29,7 +29,7 @@ class Box2DPhysicsWorld : public IPhysicsWorld
 
         void syncTransforms() override;
 
-        std::map<CollisionType, CollisionEvent> consumeCollisionEvents() override;
+        std::map<CollisionType, std::vector<CollisionEvent>> consumeCollisionEvents() override;
 
     private:
         static constexpr int SUB_STEPS = 4; // Amount of substeps in the step()
@@ -40,5 +40,5 @@ class Box2DPhysicsWorld : public IPhysicsWorld
         b2WorldId worldId;
         std::unordered_map<int, b2BodyId> bodies; // keyed by GameObject::getId()
 
-        std::map<CollisionType, CollisionEvent> collisionEvents;
+        std::map<CollisionType, std::vector<CollisionEvent>> collisionEvents;
 };

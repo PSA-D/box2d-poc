@@ -24,17 +24,22 @@ void PhysicsSystem::update(float dt)
     {
         world->step(FIXED_DT);
 
-        std::map<CollisionType, CollisionEvent> events = world->consumeCollisionEvents();
+        std::map<CollisionType, std::vector<CollisionEvent>> events = world->consumeCollisionEvents();
 
-        for (auto [type, event] : events)
+        for (auto [type, collisionEvents] : events)
         {
-            switch (type)
+            switch (type) // I know it's ugly okay
             {
                 case CollisionType::Begin:
-                    onCollisionDetected(event);
+                    for (auto event : collisionEvents)
+                        onCollisionDetected(event);
                     break;
                 case CollisionType::End:
-                    onCollisionExit(event);
+                    for (auto event : collisionEvents)
+                        onCollisionExit(event);
+                    break;
+                default:
+                    std::cout << "Unknown collision type" << std::endl;
                     break;
             }
         }

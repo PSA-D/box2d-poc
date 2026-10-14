@@ -8,6 +8,8 @@
 #include "abstract/Collider.h"
 
 #include <functional>
+#include <iostream>
+#include <ostream>
 #include <stdexcept>
 #include <vector>
 
@@ -58,7 +60,7 @@ void Box2DPhysicsWorld::step(float fixedDt)
         GameObject a = findGameObject(bodyA);
         GameObject b = findGameObject(bodyB);
 
-        collisionEvents.emplace(CollisionType::Begin, CollisionEvent{a, b});
+        collisionEvents[CollisionType::Begin].push_back(CollisionEvent{a, b});
     }
 
     for (int i = 0; i < events.endCount; ++i)
@@ -71,7 +73,7 @@ void Box2DPhysicsWorld::step(float fixedDt)
         GameObject a = findGameObject(bodyA);
         GameObject b = findGameObject(bodyB);
 
-        collisionEvents.emplace(CollisionType::End, CollisionEvent{a, b});
+        collisionEvents[CollisionType::End].push_back(CollisionEvent{a, b});
     }
 }
 
@@ -153,9 +155,9 @@ void Box2DPhysicsWorld::syncTransforms()
         removeObject(go);
 }
 
-std::map<CollisionType, CollisionEvent> Box2DPhysicsWorld::consumeCollisionEvents()
+std::map<CollisionType, std::vector<CollisionEvent>> Box2DPhysicsWorld::consumeCollisionEvents()
 {
-    std::map<CollisionType, CollisionEvent> result = std::move(collisionEvents);
+    std::map<CollisionType, std::vector<CollisionEvent>> result = std::move(collisionEvents);
     collisionEvents.clear();
 
     return result;

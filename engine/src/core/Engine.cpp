@@ -63,26 +63,50 @@ namespace engine
         std::unique_ptr<ColliderFactory> factory = std::make_unique<Box2DColliderFactory>();
         PhysicsSystem physics(registry, std::make_unique<Box2DPhysicsWorld>(registry));
 
-        GameObject ground, ball, crate;
+        GameObject ground;
 
         // Ground: no Rigidbody, so static type
         registry.createAndAdd<Transform>(ground, Vec2{0.0f, -0.5f});
-        registry.add<Collider>(ground, factory->createBoxCollider({20.0f, 1.0f}));
+        auto groundCollider = factory->createBoxCollider({24.0f, 1.0f});
+        groundCollider->setFriction(0.8f);
+        registry.add<Collider>(ground, std::move(groundCollider));
 
-        // Ball: dynamic, bouncy.
-        registry.createAndAdd<Transform>(ball, Vec2{-1.0f, 6.0f});
-        registry.createAndAdd<Rigidbody>(ball);
-        auto ballCollider = factory->createCircleCollider(0.5f);
-        ballCollider->setRestitution(0.8f); // set before the first update: the Box2D shape is created then
-        registry.add<Collider>(ball, std::move(ballCollider));
+        // 3 balls with different bounciness (restitution)
+        auto createBall = [&](Vec2 position,
+                          float restitution) -> GameObject
+        {
+            GameObject ball;
+
+            registry.createAndAdd<Transform>(ball, position);
+            registry.createAndAdd<Rigidbody>(ball);
+
+            auto collider = factory->createCircleCollider(0.5f);
+            collider->setRestitution(restitution);
+
+            registry.add<Collider>(ball, std::move(collider));
+
+            return ball;
+        };
+
+        GameObject ball1 = createBall({-1.0f, 7.0f}, 0.1f);
+        GameObject ball2 = createBall({3.0f, 7.0f}, 0.3f);
+        GameObject ball3 = createBall({ 5.0f, 7.0f}, 0.8f);
 
         // Crate: dynamic, slightly rotated so it tumbles.
-        registry.createAndAdd<Transform>(crate, Vec2{1.0f, 4.0f}, 0.3f);
+        GameObject crate;
+        registry.createAndAdd<Transform>(crate, Vec2{8.0f, 4.0f}, 0.25f);
         registry.createAndAdd<Rigidbody>(crate);
-        registry.add<Collider>(crate, factory->createBoxCollider({1.0f, 1.0f}));
+
+        auto crateCollider = factory->createBoxCollider({1.0f, 1.0f});
+        crateCollider->setDensity(2.0f);
+        crateCollider->setFriction(0.6f);
+        crateCollider->setRestitution(0.0f);
+        registry.add<Collider>(crate, std::move(crateCollider));
 
         std::cout << "Ground: " << ground.getId() << std::endl;
-        std::cout << "Ball: " << ball.getId() << std::endl;
+        std::cout << "Ball 1: " << ball1.getId() << std::endl;
+        std::cout << "Ball 2: " << ball2.getId() << std::endl;
+        std::cout << "Ball 3: " << ball3.getId() << std::endl;
         std::cout << "Crate: " << crate.getId() << std::endl;
         std::cout << std::endl;
 
@@ -93,18 +117,20 @@ namespace engine
         {
             if (frame % 30 == 0)
             {
-                printBody(time, "ball", *registry.get<Transform>(ball));
+                printBody(time, "ball 1", *registry.get<Transform>(ball1));
+                printBody(time, "ball 2", *registry.get<Transform>(ball2));
+                printBody(time, "ball 3", *registry.get<Transform>(ball3));
                 printBody(time, "crate", *registry.get<Transform>(crate));
             }
             physics.update(frameDt);
             time += frameDt;
         }
 
-        const Collider& groundCollider = *registry.get<Collider>(ground);
-        std::cout << std::boolalpha
-                  << "\nball  touching ground? " << registry.get<Collider>(ball)->collidesWith(groundCollider)
-                  << "\ncrate touching ground? " << registry.get<Collider>(crate)->collidesWith(groundCollider)
-                  << "\nball  touching crate?  " << registry.get<Collider>(ball)->collidesWith(*registry.get<Collider>(crate)) << '\n';
+        // const Collider& gCollider = *registry.get<Collider>(ground);
+        // std::cout << std::boolalpha
+        //           << "\nball  touching ground? " << registry.get<Collider>(ball)->collidesWith(gCollider)
+        //           << "\ncrate touching ground? " << registry.get<Collider>(crate)->collidesWith(gCollider)
+        //           << "\nball  touching crate?  " << registry.get<Collider>(ball)->collidesWith(*registry.get<Collider>(crate)) << '\n';
 
         std::cout << std::endl << "Box2DExample Finished" << std::endl << std::endl;
     }
