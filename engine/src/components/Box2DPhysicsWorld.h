@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IPhysicsWorld.h"
+#include "../../include/abstract/IPhysicsWorld.h"
 #include "Types.h"
 
 #include <box2d/box2d.h>

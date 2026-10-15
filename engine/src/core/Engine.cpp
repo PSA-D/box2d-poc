@@ -132,6 +132,7 @@ namespace engine
                 printBody(time, "ball 2", *registry.get<Transform>(ball2));
                 printBody(time, "ball 3", *registry.get<Transform>(ball3));
                 printBody(time, "crate", *registry.get<Transform>(crate));
+                std::cout << std::endl;
             }
             physics.update(frameDt);
             time += frameDt;

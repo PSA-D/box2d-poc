@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../include/Types.h"
-#include "../../include/abstract/ColliderFactory.h"
+#include "Types.h"
+#include "abstract/ColliderFactory.h"
 
 // Concrete factory. Every collider it creates is a Box2D collider
 class Box2DColliderFactory : public ColliderFactory
