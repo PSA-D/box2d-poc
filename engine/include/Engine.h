@@ -1,6 +1,10 @@
 #pragma once
 
-#include "Registry.h"
+#include <memory>
+
+class ColliderFactory;
+class PhysicsSystem;
+class Registry;
 
 namespace engine
 {
@@ -24,6 +28,8 @@ public:
 private:
     bool running{false};
 
-    Registry registry {};
+    std::unique_ptr<Registry> registry;
+    std::unique_ptr<PhysicsSystem> physicsSystem;
+    std::unique_ptr<ColliderFactory> factory;
 };
 } // namespace engine
