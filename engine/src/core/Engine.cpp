@@ -92,7 +92,7 @@ namespace engine
         GameObject ball4 = createBall({ 5.0f, 7.0f}, 0.8f);
 
         // Set ball 4 collider inactive
-        registry->get<Collider>(ball4)->setActive(false);
+        registry->get<Rigidbody>(ball4)->setActive(false);
 
         // Crate: dynamic, slightly rotated so it tumbles.
         GameObject crate;

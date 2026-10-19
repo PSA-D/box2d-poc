@@ -15,7 +15,7 @@ class Rigidbody : public Component {
         void setFixedRotation(const bool newFixedRotation) { fixedRotation = newFixedRotation; }
 
         float getMass() const { return mass; }
-        void setMass(const float newMass) { mass = newMass; }
+        void setMass(const float newMass) { if (newMass >= 0) mass = newMass; }
 
         float getGravityScale() const { return gravityScale; }
         void setGravityScale(const float newGravityScale) { gravityScale = newGravityScale; }
@@ -25,4 +25,4 @@ class Rigidbody : public Component {
         float mass {1.0f};
         float gravityScale {1.0f};
         bool fixedRotation {false};
-};
+};

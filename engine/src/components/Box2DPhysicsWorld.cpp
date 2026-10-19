@@ -108,20 +108,28 @@ void Box2DPhysicsWorld::addObject(GameObject& go)
         return;
 
     const Transform* transform = registry.get<Transform>(go);
+    const Rigidbody* rb = registry.get<Rigidbody>(go);
     Collider* collider = registry.get<Collider>(go);
-    if (transform == nullptr || collider == nullptr)
-        throw std::invalid_argument("Box2DPhysicsWorld::addObject: entity needs a Transform and a Collider");
 
-    Box2DShape* shape = dynamic_cast<Box2DShape*>(collider);
-    if (shape == nullptr)
-        throw std::invalid_argument("Box2DPhysicsWorld::addObject: collider was not created by Box2DColliderFactory");
+    if (transform == nullptr)
+        throw std::invalid_argument("Box2DPhysicsWorld::addObject: entity needs a Transform");
+    if (rb == nullptr && collider == nullptr)
+        throw std::invalid_argument("Box2DPhysicsWorld::addObject: entity needs a Rigidbody or Collider");
+
+    Box2DShape* shape = nullptr;
+    if (collider != nullptr && collider->isActive())
+    {
+        shape = dynamic_cast<Box2DShape*>(collider);
+        if (shape == nullptr)
+            throw std::invalid_argument("Box2DPhysicsWorld::addObject: collider was not created by Box2DColliderFactory");
+    }
 
     // Make Box2D body
     b2BodyDef bodyDef = b2DefaultBodyDef();
     bodyDef.position = b2Vec2{transform->getPosition().x, transform->getPosition().y};
     bodyDef.rotation = b2MakeRot(transform->getRotation());
 
-    if (const Rigidbody* rb = registry.get<Rigidbody>(go))
+    if (rb != nullptr && rb->isActive())
     {
         bodyDef.type          = toBox2DType(rb->getBodyType());
         bodyDef.gravityScale  = rb->getGravityScale();
@@ -134,7 +142,18 @@ void Box2DPhysicsWorld::addObject(GameObject& go)
 
     // Attach the Box2D body to the Box2D Shape
     const b2BodyId body = b2CreateBody(worldId, &bodyDef);
-    shape->attachTo(body);
+    if (shape != nullptr)
+        shape->attachTo(body);
+
+    // Use RigidBody mass
+    if (rb != nullptr && rb->isActive() && rb->getBodyType() == BodyType::Dynamic)
+    {
+        b2MassData massData = b2Body_GetMassData(body);
+        massData.mass = rb->getMass();
+
+        b2Body_SetMassData(body, massData);
+    }
+
     bodies.emplace(go.getId(), body);
 }
 
@@ -164,7 +183,7 @@ void Box2DPhysicsWorld::syncTransforms()
     {
         GameObject go{id};
         Transform* transform = registry.get<Transform>(go);
-        if (transform == nullptr || !registry.has<Collider>(go)) // Object is null
+        if (transform == nullptr) // Object is null
         {
             removedObjects.push_back(go);
             continue;

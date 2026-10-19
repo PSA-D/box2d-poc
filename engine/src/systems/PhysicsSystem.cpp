@@ -11,12 +11,10 @@
 void PhysicsSystem::update(float dt)
 {
     // Sync colliders
-    registry.each<Collider>([this](GameObject go, Collider& c)
+    registry.each<Collider>([this](GameObject go, Collider&)
     {
-        if (registry.has<Transform>(go) && !world->hasObject(go) && c.isActive())
+        if (registry.has<Transform>(go) && !world->hasObject(go))
             world->addObject(go);
-        else if (!c.isActive())
-            world->removeObject(go);
     });
 
     accumulator += std::min(dt, MAX_ACCUMULATED); // Safety limit
