@@ -2,6 +2,7 @@
 
 #include "GameObject.h"
 #include "Types.h"
+#include "abstract/Component.h"
 
 #include <memory>
 #include <typeindex>
@@ -14,29 +15,29 @@ class Registry
 {
     public:
         // Attach a component to a game object
-        template <class T>
-        T& add(const GameObject& go, std::unique_ptr<T> component)
+        template<typename Component>
+        Component& add(const GameObject& go, std::unique_ptr<Component> component)
         {
-            T& ref = *component;
+            Component& ref = *component;
 
-            ComponentPool<T>& pool = getOrCreatePool<T>();
+            ComponentPool<Component>& pool = getOrCreatePool<Component>();
             pool.items[go.getId()] = std::move(component); // Attach component to game object
 
             return ref;
         }
 
         // Construct a component in place and adds it
-        template <class T, class... Args>
-        T& createAndAdd(const GameObject& go, Args&&... args)
+        template <typename Component, class... Args>
+        Component& createAndAdd(const GameObject& go, Args&&... args)
         {
-            std::unique_ptr<T> component = std::make_unique<T>(std::forward<Args>(args)...); // Perfect forwarding with the arguments given
-            return add<T>(go, std::move(component));
+            std::unique_ptr<Component> component = std::make_unique<Component>(std::forward<Args>(args)...); // Perfect forwarding with the arguments given
+            return add<Component>(go, std::move(component));
         }
 
-        template <class T>
-        T* get(const GameObject& go) const
+        template<typename Component>
+        Component* get(const GameObject& go) const
         {
-            const ComponentPool<T>* pool = findPool<T>();
+            const ComponentPool<Component>* pool = findPool<Component>();
             if (pool == nullptr) return nullptr;
 
             const auto found = pool->items.find(go.getId());
@@ -44,16 +45,16 @@ class Registry
             return found == pool->items.end() ? nullptr : found->second.get();
         }
 
-        template <class T>
+        template<typename Component>
         bool has(const GameObject& go) const
         {
-            return get<T>(go) != nullptr;
+            return get<Component>(go) != nullptr;
         }
 
-        template <class T>
+        template<typename Component>
         void remove(const GameObject& go)
         {
-            if (ComponentPool<T>* pool = findPool<T>())
+            if (ComponentPool<Component>* pool = findPool<Component>())
                 pool->items.erase(go.getId());
         }
 
@@ -65,10 +66,10 @@ class Registry
         }
 
         // Calls the function for every entity that has a type T. Function must have these parameters: GameObject, Component
-        template <class T, class Function>
+        template <typename Component, class Function>
         void each(Function&& func)
         {
-            ComponentPool<T>* pool = findPool<T>();
+            ComponentPool<Component>* pool = findPool<Component>();
             if (pool == nullptr) return;
 
             for (auto& [id, component] : pool->items)
@@ -76,23 +77,23 @@ class Registry
         }
 
     private:
-        template <class T>
-        ComponentPool<T>& getOrCreatePool()
+        template<typename Component>
+        ComponentPool<Component>& getOrCreatePool()
         {
             // std::type_index(typeid(T)) is a unique label for the type T, like "Transform" or "Rigidbody"
-            std::unique_ptr<IPool>& slot = pools[std::type_index(typeid(T))]; // if nullptr, inserts a new empty one
+            std::unique_ptr<IPool>& slot = pools[std::type_index(typeid(Component))]; // if nullptr, inserts a new empty one
             if (!slot)
-                slot = std::make_unique<ComponentPool<T>>();
+                slot = std::make_unique<ComponentPool<Component>>();
 
-            return static_cast<ComponentPool<T>&>(*slot); // Cast to the right type
+            return dynamic_cast<ComponentPool<Component>&>(*slot); // Cast to the right type
         }
 
-        template <class T>
-        ComponentPool<T>* findPool() const
+        template<typename Component>
+        ComponentPool<Component>* findPool() const
         {
-            const auto found = pools.find(std::type_index(typeid(T)));
+            const auto found = pools.find(std::type_index(typeid(Component)));
 
-            return found == pools.end() ? nullptr : static_cast<ComponentPool<T>*>(found->second.get()); // Cast to the right type
+            return found == pools.end() ? nullptr : dynamic_cast<ComponentPool<Component>*>(found->second.get()); // Cast to the right type
         }
 
         std::unordered_map<std::type_index, std::unique_ptr<IPool>> pools; // type_index is just the object type as an index
