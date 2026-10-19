@@ -90,6 +90,10 @@ namespace engine
         GameObject ball1 = createBall({-1.0f, 7.0f}, 0.1f);
         GameObject ball2 = createBall({3.0f, 7.0f}, 0.3f);
         GameObject ball3 = createBall({ 5.0f, 7.0f}, 0.8f);
+        GameObject ball4 = createBall({ 5.0f, 7.0f}, 0.8f);
+
+        // Set ball 4 collider inactive
+        registry->get<Collider>(ball4)->setActive(false);
 
         // Crate: dynamic, slightly rotated so it tumbles.
         GameObject crate;
@@ -116,6 +120,7 @@ namespace engine
         std::cout << "Ball 1: " << ball1.getId() << std::endl;
         std::cout << "Ball 2: " << ball2.getId() << std::endl;
         std::cout << "Ball 3: " << ball3.getId() << std::endl;
+        std::cout << "Ball 4: " << ball4.getId() << std::endl;
         std::cout << "Crate: " << crate.getId() << std::endl;
         std::cout << "Trigger: " << triggerZone.getId() << std::endl;
         std::cout << std::endl;
@@ -130,6 +135,7 @@ namespace engine
                 printBody(time, "ball 1", *registry->get<Transform>(ball1));
                 printBody(time, "ball 2", *registry->get<Transform>(ball2));
                 printBody(time, "ball 3", *registry->get<Transform>(ball3));
+                printBody(time, "ball 4", *registry->get<Transform>(ball4));
                 printBody(time, "crate", *registry->get<Transform>(crate));
                 std::cout << std::endl;
             }

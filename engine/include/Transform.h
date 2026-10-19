@@ -2,13 +2,13 @@
 
 #include "Types.h"
 
-class Transform : Component
+class Transform : public Component
 {
     public:
         Transform();
         Transform(const Vec2& pos, float rot = 0.0f) : position(pos), rotation(rot) {};
 
-        void setPosition(const Vec2& pos) { position = pos; }
+        void setPosition(const Vec2& pos) { position.x = pos.x; position.y = pos.y; }
         Vec2 getPosition() const { return position; }
 
         void setRotation(float rot) { rotation = rot; }
