@@ -25,39 +25,35 @@ void PhysicsSystem::update(float dt)
     while (accumulator >= FIXED_DT)
     {
         world->step(FIXED_DT);
-
-        std::map<CollisionType, std::vector<CollisionEvent>> events = world->consumeCollisionEvents();
-
-        for (auto [type, collisionEvents] : events)
-        {
-            switch (type) // I know it's ugly okay, but it's an PoC
-            {
-                case CollisionType::Begin:
-                    for (auto event : collisionEvents)
-                    {
-                        event.isTrigger
-                            ? onTriggerEnter(event)
-                            : onCollisionDetected(event);
-                    }
-                    break;
-                case CollisionType::End:
-                    for (auto event : collisionEvents)
-                    {
-                        event.isTrigger
-                            ? onTriggerExit(event)
-                            : onCollisionExit(event);
-                    }
-                    break;
-                default:
-                    std::cout << "Unknown collision type" << std::endl;
-                    break;
-            }
-        }
-
         accumulator -= FIXED_DT;
+        dispatchEvents();
     }
 
     world->syncTransforms();
+}
+
+void PhysicsSystem::dispatchEvents()
+{
+    for (auto& collisionEvent : world->consumeCollisionEvents())
+    {
+        switch (collisionEvent.type)
+        {
+            case CollisionType::Begin:
+                collisionEvent.isTrigger
+                    ? onTriggerEnter(collisionEvent)
+                    : onCollisionDetected(collisionEvent);
+
+                break;
+            case CollisionType::End:
+                collisionEvent.isTrigger
+                    ? onTriggerExit(collisionEvent)
+                    : onCollisionExit(collisionEvent);
+                break;
+            default:
+                std::cout << "Unknown collision type" << std::endl;
+                break;
+        }
+    }
 }
 
 void PhysicsSystem::onCollisionDetected(CollisionEvent& event)

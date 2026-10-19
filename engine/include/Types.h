@@ -22,16 +22,17 @@ struct ComponentPool : IPool // Object pool for all components
     void erase(int id) override { items.erase(id); }
 };
 
-struct CollisionEvent
-{
-    GameObject one; // For trigger: sensor
-    GameObject two; // For trigger: visitor
-    bool isTrigger {false};
-};
-
 enum class CollisionType
 {
     Begin,
     Stay, // Not Implemented yet
     End,
 }; // Can be extended with Hit events. Hit events are brutal touches. Example Hit event: ball slamming in wall.
+
+struct CollisionEvent
+{
+    GameObject one; // For trigger: sensor
+    GameObject two; // For trigger: visitor
+    CollisionType type;
+    bool isTrigger {false};
+};

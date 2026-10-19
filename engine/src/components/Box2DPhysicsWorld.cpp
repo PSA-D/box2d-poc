@@ -7,9 +7,6 @@
 #include "Transform.h"
 #include "abstract/Collider.h"
 
-#include <functional>
-#include <iostream>
-#include <ostream>
 #include <stdexcept>
 #include <vector>
 
@@ -60,7 +57,7 @@ void Box2DPhysicsWorld::step(float fixedDt)
         GameObject a = findGameObject(bodyA);
         GameObject b = findGameObject(bodyB);
 
-        collisionEvents[CollisionType::Begin].push_back(CollisionEvent{a, b});
+        collisionEvents.push_back(CollisionEvent{a, b, CollisionType::Begin});
     }
 
     for (int i = 0; i < events.endCount; ++i)
@@ -73,7 +70,7 @@ void Box2DPhysicsWorld::step(float fixedDt)
         GameObject a = findGameObject(bodyA);
         GameObject b = findGameObject(bodyB);
 
-        collisionEvents[CollisionType::End].push_back(CollisionEvent{a, b});
+        collisionEvents.push_back(CollisionEvent{a, b, CollisionType::End});
     }
 
     b2SensorEvents sensorEvents = b2World_GetSensorEvents(worldId);
@@ -88,7 +85,7 @@ void Box2DPhysicsWorld::step(float fixedDt)
         GameObject a = findGameObject(bodySensor);
         GameObject b = findGameObject(bodyVisitor);
 
-        collisionEvents[CollisionType::Begin].push_back(CollisionEvent{a, b, true});
+        collisionEvents.push_back(CollisionEvent{a, b, CollisionType::Begin, true});
     }
 
     for (int i = 0; i < sensorEvents.endCount; ++i)
@@ -101,7 +98,7 @@ void Box2DPhysicsWorld::step(float fixedDt)
         GameObject a = findGameObject(bodySensor);
         GameObject b = findGameObject(bodyVisitor);
 
-        collisionEvents[CollisionType::End].push_back(CollisionEvent{a, b, true});
+        collisionEvents.push_back(CollisionEvent{a, b, CollisionType::End, true});
     }
 }
 
@@ -174,18 +171,21 @@ void Box2DPhysicsWorld::syncTransforms()
         }
 
         // Else, sync the transform
-        const b2Vec2 pos = b2Body_GetPosition(body);
-        transform->setPosition({pos.x, pos.y});
-        transform->setRotation(b2Rot_GetAngle(b2Body_GetRotation(body)));
+        if (transform->isActive())
+        {
+            const b2Vec2 pos = b2Body_GetPosition(body);
+            transform->setPosition({pos.x, pos.y});
+            transform->setRotation(b2Rot_GetAngle(b2Body_GetRotation(body)));
+        }
     }
 
     for (GameObject& go : removedObjects)
         removeObject(go);
 }
 
-std::map<CollisionType, std::vector<CollisionEvent>> Box2DPhysicsWorld::consumeCollisionEvents()
+std::vector<CollisionEvent> Box2DPhysicsWorld::consumeCollisionEvents()
 {
-    std::map<CollisionType, std::vector<CollisionEvent>> result = std::move(collisionEvents);
+    std::vector<CollisionEvent> result = std::move(collisionEvents);
     collisionEvents.clear();
 
     return result;

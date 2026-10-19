@@ -2,7 +2,6 @@
 
 #include "../Types.h"
 
-#include <map>
 #include <vector>
 
 class GameObject;
@@ -21,5 +20,5 @@ public:
 
     virtual void syncTransforms() = 0; // Sync the transforms with the colliders
 
-    virtual std::map<CollisionType, std::vector<CollisionEvent>> consumeCollisionEvents() = 0;
+    virtual std::vector<CollisionEvent> consumeCollisionEvents() = 0;
 };

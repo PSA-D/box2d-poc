@@ -4,7 +4,6 @@
 #include "Types.h"
 
 #include <box2d/box2d.h>
-#include <map>
 #include <unordered_map>
 
 class Registry;
@@ -29,7 +28,7 @@ class Box2DPhysicsWorld : public IPhysicsWorld
 
         void syncTransforms() override;
 
-        std::map<CollisionType, std::vector<CollisionEvent>> consumeCollisionEvents() override;
+        std::vector<CollisionEvent> consumeCollisionEvents() override;
 
     private:
         static constexpr int SUB_STEPS = 4; // Amount of substeps in the step()
@@ -40,5 +39,5 @@ class Box2DPhysicsWorld : public IPhysicsWorld
         b2WorldId worldId;
         std::unordered_map<int, b2BodyId> bodies; // keyed by GameObject::getId()
 
-        std::map<CollisionType, std::vector<CollisionEvent>> collisionEvents;
+        std::vector<CollisionEvent> collisionEvents;
 };

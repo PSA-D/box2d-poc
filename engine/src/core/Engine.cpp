@@ -71,8 +71,7 @@ namespace engine
         registry->add<Collider>(ground, std::move(groundCollider));
 
         // 3 balls with different bounciness (restitution)
-        auto createBall = [&](Vec2 position,
-                          float restitution) -> GameObject
+        auto createBall = [&](Vec2 position, float restitution) -> GameObject
         {
             GameObject ball;
 

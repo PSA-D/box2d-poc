@@ -19,6 +19,7 @@ class PhysicsSystem
         void removeObject(GameObject& go) { world->removeObject(go); }
 
         void update(float dt);
+        void dispatchEvents();
 
         void onCollisionDetected(CollisionEvent& event);
         void onCollisionExit(CollisionEvent& event);
