@@ -53,8 +53,8 @@ namespace engine
         {
             std::cout << std::fixed << std::setprecision(2)
                       << "t=" << std::setw(5) << time << "s  " << std::setw(6) << name
-                      << "  pos=(" << std::setw(6) << t.position.x << ", " << std::setw(6) << t.position.y << ")"
-                      << "  angle=" << std::setw(6) << t.rotation << " rad\n";
+                      << "  pos=(" << std::setw(6) << t.getPosition().x << ", " << std::setw(6) << t.getPosition().y << ")"
+                      << "  angle=" << std::setw(6) << t.getRotation() << " rad\n";
         }
     }
 

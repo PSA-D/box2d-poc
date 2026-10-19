@@ -121,8 +121,8 @@ void Box2DPhysicsWorld::addObject(GameObject& go)
 
     // Make Box2D body
     b2BodyDef bodyDef = b2DefaultBodyDef();
-    bodyDef.position = b2Vec2{transform->position.x, transform->position.y};
-    bodyDef.rotation = b2MakeRot(transform->rotation);
+    bodyDef.position = b2Vec2{transform->getPosition().x, transform->getPosition().y};
+    bodyDef.rotation = b2MakeRot(transform->getRotation());
 
     if (const Rigidbody* rb = registry.get<Rigidbody>(go))
     {
@@ -175,8 +175,8 @@ void Box2DPhysicsWorld::syncTransforms()
 
         // Else, sync the transform
         const b2Vec2 pos = b2Body_GetPosition(body);
-        transform->position = Vec2{pos.x, pos.y};
-        transform->rotation = b2Rot_GetAngle(b2Body_GetRotation(body));
+        transform->setPosition({pos.x, pos.y});
+        transform->setRotation(b2Rot_GetAngle(b2Body_GetRotation(body)));
     }
 
     for (GameObject& go : removedObjects)
