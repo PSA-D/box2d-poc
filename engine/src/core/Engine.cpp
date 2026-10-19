@@ -89,7 +89,7 @@ namespace engine
         GameObject ball1 = createBall({-1.0f, 7.0f}, 0.1f);
         GameObject ball2 = createBall({3.0f, 7.0f}, 0.3f);
         GameObject ball3 = createBall({ 5.0f, 7.0f}, 0.8f);
-        GameObject ball4 = createBall({ 5.0f, 7.0f}, 0.8f);
+        GameObject ball4 = createBall({ 6.5f, 7.0f}, 0.8f);
 
         // Set ball 4 collider inactive
         registry->get<Rigidbody>(ball4)->setActive(false);
